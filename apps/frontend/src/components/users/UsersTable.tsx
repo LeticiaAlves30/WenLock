@@ -4,7 +4,7 @@ import type { User } from '../../types/user';
 
 type UsersTableProps = {
   users: User[];
-  onDeleteRequested: (id: string) => void;
+  onDeleteRequested: (user: User) => void;
 };
 
 export function UsersTable({ users, onDeleteRequested }: UsersTableProps) {
@@ -27,7 +27,7 @@ export function UsersTable({ users, onDeleteRequested }: UsersTableProps) {
               <td>{user.registration}</td>
               <td>
                 <Link to={'/users/' + user.id + '/edit'}>Editar</Link>
-                <Button type="button" onClick={() => onDeleteRequested(user.id)}>
+                <Button type="button" onClick={() => onDeleteRequested(user)}>
                   Excluir
                 </Button>
               </td>
