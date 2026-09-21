@@ -1,68 +1,104 @@
 # Wenlock
 
-Fundação de um desafio técnico Full Stack para gerenciamento de usuários. Esta etapa entrega somente a arquitetura executável; o CRUD de usuários será implementado posteriormente.
+Wenlock é uma aplicação Full Stack para gerenciamento de usuários, organizada como monorepo. O projeto oferece uma SPA React para a operação do sistema e uma API NestJS com persistência em PostgreSQL.
 
 ## Stack
 
-- Monorepo com pnpm workspaces e TypeScript estrito
-- Frontend: React, Vite, React Router, TanStack Query, Axios, React Hook Form, Zod, Vitest e React Testing Library
-- Backend: NestJS, Prisma, PostgreSQL, class-validator, class-transformer, bcrypt, Swagger e Jest
+- Monorepo: pnpm workspaces e TypeScript
+- Frontend: React, Vite, React Router, Tailwind CSS, Manrope, TanStack Query, React Hook Form, Zod, Vitest e React Testing Library
+- Backend: NestJS, Prisma, PostgreSQL, class-validator, bcrypt, Swagger e Jest
+- Ícones de interface: `@phosphor-icons/react`
 
-## Arquitetura
+## Estrutura
 
-\`\`\`text
+```text
 .
 ├── apps/
-│   ├── backend/             # API NestJS
-│   │   ├── prisma/          # schema Prisma (sem entidades nesta etapa)
-│   │   ├── src/
-│   │   │   ├── common/      # infraestrutura compartilhada (Prisma)
-│   │   │   ├── config/      # configurações centralizadas
-│   │   │   └── modules/     # módulos da aplicação (health)
-│   │   └── test/
-│   └── frontend/            # SPA React/Vite
+│   ├── backend/                 # API NestJS e Prisma
+│   │   ├── prisma/              # schema, migrations e seed
+│   │   └── src/
+│   │       ├── common/          # PrismaService
+│   │       ├── config/          # configuração da aplicação
+│   │       └── modules/         # health e users
+│   └── frontend/                # SPA React/Vite
 │       └── src/
-│           ├── app/         # composição da aplicação
-│           ├── pages/       # páginas de rota
-│           ├── routes/      # definição de rotas
-│           └── services/    # cliente HTTP centralizado
-├── packages/shared/         # tipos e constantes compartilháveis no futuro
-├── docker-compose.yml       # PostgreSQL local
-├── pnpm-workspace.yaml
-└── tsconfig.base.json
-\`\`\`
+│           ├── assets/          # logo e ilustrações do produto
+│           ├── components/      # layout, UI, feedback e usuários
+│           ├── pages/           # Login, Home e Usuários
+│           ├── routes/          # roteamento e proteção local
+│           └── services/        # cliente HTTP e serviços
+├── packages/shared/             # contratos compartilháveis
+├── docker-compose.yml           # PostgreSQL local
+└── pnpm-workspace.yaml
+```
 
 ## Pré-requisitos
 
 - Node.js 22+ (testado com Node 24)
-- pnpm 10+ (\`corepack enable\` caso necessário)
-- Docker e Docker Compose
+- pnpm 10+ (use `corepack enable` se necessário)
+- Docker e Docker Compose, ou uma instância PostgreSQL local
 
-## Instalação e configuração
+## Configuração local
 
-\`\`\`bash
+Instale as dependências e crie os arquivos de ambiente:
+
+```bash
 pnpm install
 Copy-Item apps/frontend/.env.example apps/frontend/.env
 Copy-Item apps/backend/.env.example apps/backend/.env
-docker compose up -d
-\`\`\`
+```
 
-No macOS/Linux, substitua \`Copy-Item\` por \`cp\`.
+No macOS/Linux, substitua `Copy-Item` por `cp`.
+
+Para utilizar o PostgreSQL via Docker:
+
+```bash
+docker compose up -d
+pnpm --dir apps/backend exec prisma migrate deploy
+pnpm --filter @wenlock/backend db:seed
+```
+
+Os exemplos de ambiente usam:
+
+```env
+# apps/backend/.env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/wenlock?schema=public
+PORT=3000
+WEB_ORIGIN=http://localhost:5173
+
+# apps/frontend/.env
+VITE_API_URL=http://localhost:3000/api
+```
+
+## Seed administrativo
+
+O seed é idempotente e cria ou atualiza o usuário administrativo abaixo:
+
+| Campo | Valor |
+| --- | --- |
+| Nome | Administrador WenLock |
+| E-mail | admin@wenlock.local |
+| Matrícula | 000001 |
+| Senha | Admin1 |
+
+A senha atende à regra atual de seis caracteres alfanuméricos e é persistida somente como hash bcrypt. O modelo atual não possui um campo de papel/permissão; a identificação administrativa é dada pelos dados do seed.
 
 ## Execução
 
-\`\`\`bash
+Inicie frontend e backend:
+
+```bash
 pnpm dev
-\`\`\`
+```
 
-Ou execute cada aplicação isoladamente:
+Ou inicie cada aplicação separadamente:
 
-\`\`\`bash
+```bash
 pnpm dev:frontend
 pnpm dev:backend
-\`\`\`
+```
 
-## URLs locais
+### URLs locais
 
 - Web: http://localhost:5173
 - API: http://localhost:3000/api
@@ -70,27 +106,55 @@ pnpm dev:backend
 - Health check: http://localhost:3000/api/health
 - PostgreSQL: localhost:5432
 
+## Recursos entregues
+
+- Layout global com sidebar, topbar e menu de perfil
+- Home com ilustração de boas-vindas
+- CRUD de usuários com busca server-side, debounce e paginação de 15 itens
+- Cadastro e edição com validação Zod e React Hook Form
+- Confirmação de cancelamento e exclusão
+- Toasts de cadastro e exclusão bem-sucedidos
+- Estado vazio e estado de pesquisa sem resultado com ilustrações
+- Drawer lateral para visualização dos detalhes de um usuário
+- API REST de usuários com validação, unicidade de e-mail/matrícula e senha hasheada
+
+## Rotas do frontend
+
+| Rota | Descrição |
+| --- | --- |
+| `/login` | Login demonstrativo, fora do layout interno |
+| `/` | Home protegida por sessão local |
+| `/users` | Listagem, busca, visualização e exclusão |
+| `/users/new` | Cadastro de usuário |
+| `/users/:id/edit` | Edição de usuário |
+
+## API de usuários
+
+Todos os endpoints usam o prefixo `/api`:
+
+| Método | Rota | Descrição |
+| --- | --- | --- |
+| `GET` | `/users` | Lista usuários paginados e aceita `page`, `limit` e `search` |
+| `GET` | `/users/:id` | Busca um usuário por UUID |
+| `POST` | `/users` | Cria um usuário |
+| `PATCH` | `/users/:id` | Atualiza um usuário |
+| `DELETE` | `/users/:id` | Exclui um usuário |
+
+Consulte o Swagger local para os schemas completos e exemplos de requisição.
+
 ## Scripts
 
-\`\`\`bash
-pnpm dev       # inicia frontend e backend
-pnpm build     # compila todos os pacotes
-pnpm lint      # executa ESLint/typecheck aplicável
-pnpm test      # executa testes
-pnpm format    # formata o repositório com Prettier
-\`\`\`
+```bash
+pnpm dev                                      # inicia frontend e backend
+pnpm dev:frontend                             # inicia apenas o frontend
+pnpm dev:backend                              # inicia apenas o backend
+pnpm build                                    # compila todos os workspaces
+pnpm lint                                     # executa o lint em todos os workspaces
+pnpm test                                     # executa os testes em todos os workspaces
+pnpm --filter @wenlock/backend db:seed        # executa o seed administrativo
+pnpm format                                   # formata o repositório com Prettier
+```
 
-## Decisões iniciais
+## Qualidade
 
-- Variáveis de ambiente são centralizadas em \`src/config\` no backend e em \`src/config/env.ts\` no frontend.
-- A API usa o prefixo global \`/api\`, CORS para a aplicação local e validação global preparada para os futuros DTOs.
-- Prisma já está encapsulado em \`PrismaModule\`/\`PrismaService\`, sem modelo ou migration de usuário.
-- \`packages/shared\` não contém regras de negócio, apenas pontos de extensão para tipos e constantes.
-
-## Modelagem de dados
-
-O modelo de persistência inicial de User está documentado em [docs/data-model.md](docs/data-model.md). Ele inclui UUID, e-mail e matrícula únicos, hash de senha e timestamps automáticos, sem endpoints ou regras de CRUD nesta etapa.
-
-## Contrato da API
-
-Os DTOs, validações e contratos planejados de usuários estão em [docs/api-contract.md](docs/api-contract.md). Os schemas também ficam disponíveis no Swagger em /api/docs; endpoints serão implementados em etapa posterior.
+Os testes cobrem validações, fluxos de cadastro, edição, exclusão, listagem, busca, navegação, sessão demonstrativa e o drawer de visualização. Execute `pnpm lint`, `pnpm test` e `pnpm build` antes de publicar alterações.
