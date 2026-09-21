@@ -39,9 +39,9 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         collapsed ? 'w-20' : 'w-64',
       ].join(' ')}
     >
-      <div className="flex h-24 items-center px-7">
+      <div className={`flex h-24 items-center ${collapsed ? 'justify-center px-2' : 'px-7'}`}>
         {collapsed ? (
-          <img src={wenlockSymbol} alt="WenLock" className="h-auto w-11" />
+          <img src={wenlockSymbol} alt="WenLock" className="h-auto w-14" />
         ) : (
           <img src={wenlockLogo} alt="WenLock" className="h-auto w-full max-w-48" />
         )}
@@ -97,7 +97,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       <button
         type="button"
         aria-label={collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'}
-        className="absolute -right-3 top-10 flex size-7 items-center justify-center rounded-full border border-sidebar/20 bg-surface text-sidebar shadow-sm hover:bg-app-background"
+        className="absolute -right-5 top-10 flex size-7 items-center justify-center rounded-full border border-sidebar/20 bg-surface text-sidebar shadow-sm hover:bg-app-background"
         onClick={onToggle}
       >
         {collapsed ? (
