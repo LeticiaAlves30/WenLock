@@ -103,6 +103,23 @@ describe('UsersPage', () => {
     expect(await screen.findByText('Nenhum Usuário Registrado')).toBeInTheDocument();
   });
 
+  it('displays the supplied illustration when a search has no results', async () => {
+    getUsersMock.mockImplementation(async (params?: UsersQueryParams) =>
+      createResponse({
+        data: [],
+        meta: { page: params?.page ?? 1, limit: 15, total: 0, totalPages: 0 },
+      }),
+    );
+    renderUsersPage();
+
+    fireEvent.change(screen.getByPlaceholderText('Pesquisar por nome'), {
+      target: { value: 'inexistente' },
+    });
+
+    expect(await screen.findByText('Nenhum Resultado Encontrado')).toBeInTheDocument();
+    expect(screen.getByAltText('Ilustração de nenhum resultado encontrado')).toBeInTheDocument();
+  });
+
   it('displays an error state when loading fails', async () => {
     getUsersMock.mockRejectedValue(new Error('Request failed'));
 

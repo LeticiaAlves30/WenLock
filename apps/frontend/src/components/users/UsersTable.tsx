@@ -1,3 +1,4 @@
+import { Eye, PencilSimple, Trash } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
 import type { User } from '../../types/user';
 import { Button } from '../ui/Button';
@@ -7,32 +8,6 @@ type UsersTableProps = {
   onViewRequested: (user: User) => void;
   onDeleteRequested: (user: User) => void;
 };
-
-function ViewIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
-      <circle cx="12" cy="12" r="2.5" />
-    </svg>
-  );
-}
-
-function EditIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="m4 20 4.3-1L19 8.3a2.1 2.1 0 0 0-3-3L5.3 16 4 20Z" />
-      <path d="m13.8 7.5 3 3" />
-    </svg>
-  );
-}
-
-function DeleteIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M4 7h16M9 7V4h6v3m-9 0 1 13h10l1-13M10 11v5m4-5v5" />
-    </svg>
-  );
-}
 
 const actionClassName =
   'inline-flex size-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-primary/10 hover:text-primary';
@@ -64,7 +39,7 @@ export function UsersTable({ users, onDeleteRequested, onViewRequested }: UsersT
                     className={actionClassName}
                     onClick={() => onViewRequested(user)}
                   >
-                    <ViewIcon />
+                    <Eye aria-hidden="true" size={19} weight="regular" />
                   </Button>
                   <Link
                     to={'/users/' + user.id + '/edit'}
@@ -72,7 +47,7 @@ export function UsersTable({ users, onDeleteRequested, onViewRequested }: UsersT
                     aria-label="Editar usuário"
                     className={actionClassName}
                   >
-                    <EditIcon />
+                    <PencilSimple aria-hidden="true" size={19} weight="regular" />
                   </Link>
                   <Button
                     type="button"
@@ -81,7 +56,7 @@ export function UsersTable({ users, onDeleteRequested, onViewRequested }: UsersT
                     className={actionClassName + ' hover:text-danger'}
                     onClick={() => onDeleteRequested(user)}
                   >
-                    <DeleteIcon />
+                    <Trash aria-hidden="true" size={19} weight="regular" />
                   </Button>
                 </div>
               </td>

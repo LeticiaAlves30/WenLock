@@ -1,6 +1,8 @@
+import { MagnifyingGlass } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import usersSearchEmptyIllustration from '../../assets/users-search-empty.svg';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
@@ -26,15 +28,6 @@ function getSuccessMessage(state: unknown): string | undefined {
 
   const { successMessage } = state as { successMessage?: unknown };
   return typeof successMessage === 'string' ? successMessage : undefined;
-}
-
-function SearchIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="11" cy="11" r="6" />
-      <path d="m16 16 4 4" />
-    </svg>
-  );
 }
 
 export function UsersPage() {
@@ -118,9 +111,7 @@ export function UsersPage() {
             Pesquisar por nome
           </label>
           <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted">
-            <span className="size-5">
-              <SearchIcon />
-            </span>
+            <MagnifyingGlass aria-hidden="true" size={20} weight="bold" />
           </span>
           <input
             id="users-search"
@@ -165,10 +156,12 @@ export function UsersPage() {
         {data && !isError && isEmpty ? (
           <>
             <EmptyState
-              title={search ? 'Nenhum Usuário Encontrado' : 'Nenhum Usuário Registrado'}
+              illustrationAlt={search ? 'Ilustração de nenhum resultado encontrado' : undefined}
+              illustrationSrc={search ? usersSearchEmptyIllustration : undefined}
+              title={search ? 'Nenhum Resultado Encontrado' : 'Nenhum Usuário Registrado'}
               message={
                 search
-                  ? 'Não encontramos usuários para esta pesquisa.'
+                  ? 'Não foi possível achar nenhum resultado para sua busca. Tente refazer a pesquisa para encontrar o que busca.'
                   : 'Utilize o botão Cadastrar Usuário para adicionar o primeiro usuário.'
               }
             />
