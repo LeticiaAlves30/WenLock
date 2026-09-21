@@ -3,9 +3,9 @@
  * It is not authentication or an authorization boundary.
  */
 export const DEMO_USER = {
-  initials: 'MS',
-  name: 'Milena Santana Borges',
-  email: 'milena.santana@energy.org.br',
+  initials: 'AW',
+  name: 'Administrador WenLock',
+  email: 'admin@wenlock.local',
 } as const;
 
 const SESSION_KEY = 'wenlock:demo-session';

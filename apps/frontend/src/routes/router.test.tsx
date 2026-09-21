@@ -81,7 +81,7 @@ describe('router', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: 'Abrir menu do perfil' }));
     expect(screen.getByRole('menu', { name: 'Menu do perfil' })).toBeInTheDocument();
-    expect(screen.getByText('Milena Santana Borges')).toBeInTheDocument();
+    expect(screen.getByText('Administrador WenLock')).toBeInTheDocument();
 
     fireEvent.mouseDown(document.body);
 
