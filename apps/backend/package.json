@@ -7,7 +7,11 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "jest"
+    "test": "jest",
+    "db:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
