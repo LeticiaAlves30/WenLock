@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --color-sidebar: #0d1931;
+  --color-primary: #00aac1;
+  --color-secondary: #0290a4;
+  --color-primary-hover: #00606d;
+  --color-app-background: #f0f0f0;
+  --color-surface: #ffffff;
+  --color-danger: #b00020;
+  --color-content: #0b2b25;
+  --color-heading: #0a453a;
+  --color-muted: #6f7d7d;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-width: 20rem;
+    background: var(--color-app-background);
+    color: var(--color-content);
+    font-family: var(--font-sans);
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+@utility surface-card {
+  border: 1px solid color-mix(in srgb, var(--color-sidebar) 10%, transparent);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px rgb(13 25 49 / 8%);
+}
