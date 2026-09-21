@@ -1,0 +1,19 @@
+{
+  "name": "wenlock",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.17.1",
+  "scripts": {
+    "dev": "concurrently -n frontend,backend -c cyan,green \"corepack pnpm --filter @wenlock/frontend dev\" \"corepack pnpm --filter @wenlock/backend start:dev\"",
+    "dev:frontend": "corepack pnpm --filter @wenlock/frontend dev",
+    "dev:backend": "corepack pnpm --filter @wenlock/backend start:dev",
+    "build": "corepack pnpm -r --if-present build",
+    "lint": "corepack pnpm -r --if-present lint",
+    "test": "corepack pnpm -r --if-present test",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2"
+  }
+}
