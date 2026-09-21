@@ -1,0 +1,20 @@
+.users-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.users-page__search {
+  max-width: 28rem;
+  width: 100%;
+}
+
+.users-table-container {
+  overflow-x: auto;
+}
+
+.users-table-container table {
+  min-width: 40rem;
+  width: 100%;
+}
