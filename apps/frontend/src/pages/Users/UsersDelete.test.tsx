@@ -19,7 +19,7 @@ const user = {
   createdAt: '2026-09-19T00:00:00.000Z',
   updatedAt: '2026-09-19T00:00:00.000Z',
 };
-const response = { data: [user], meta: { page: 1, limit: 10, total: 1, totalPages: 1 } };
+const response = { data: [user], meta: { page: 1, limit: 15, total: 1, totalPages: 1 } };
 
 function renderPage() {
   const queryClient = new QueryClient({
@@ -41,7 +41,7 @@ function renderPage() {
 
 async function openDialog() {
   await screen.findByText('Maria Silva');
-  fireEvent.click(screen.getByRole('button', { name: 'Excluir' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Excluir usuário' }));
   return screen.findByRole('dialog');
 }
 

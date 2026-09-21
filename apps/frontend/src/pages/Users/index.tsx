@@ -13,15 +13,26 @@ import { useDeleteUser } from '../../hooks/useDeleteUser';
 import { useUsers } from '../../hooks/useUsers';
 import type { User } from '../../types/user';
 import { getApiErrorMessage, hasApiErrorStatus } from '../../utils/getApiErrorMessage';
-import './UsersPage.css';
 
-const USERS_PAGE_LIMIT = 10;
+const USERS_PAGE_LIMIT = 15;
 const SEARCH_DEBOUNCE_DELAY = 400;
 
 function getSuccessMessage(state: unknown): string | undefined {
-  if (typeof state !== 'object' || state === null) return undefined;
+  if (typeof state !== 'object' || state === null) {
+    return undefined;
+  }
+
   const { successMessage } = state as { successMessage?: unknown };
   return typeof successMessage === 'string' ? successMessage : undefined;
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="11" cy="11" r="6" />
+      <path d="m16 16 4 4" />
+    </svg>
+  );
 }
 
 export function UsersPage() {
@@ -31,13 +42,23 @@ export function UsersPage() {
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [deletionMessage, setDeletionMessage] = useState<string>();
   const search = useDebounce(searchInput, SEARCH_DEBOUNCE_DELAY).trim();
-  const { data, isError, isPending, refetch } = useUsers({ page, limit: USERS_PAGE_LIMIT, search });
+  const { data, isError, isPending, refetch } = useUsers({
+    page,
+    limit: USERS_PAGE_LIMIT,
+    search,
+  });
   const deleteUser = useDeleteUser();
 
   useEffect(() => {
-    if (!data) return;
+    if (!data) {
+      return;
+    }
+
     const nextPage = data.meta.totalPages === 0 ? 1 : Math.min(page, data.meta.totalPages);
-    if (nextPage !== page) setPage(nextPage);
+
+    if (nextPage !== page) {
+      setPage(nextPage);
+    }
   }, [data, page]);
 
   function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
@@ -51,7 +72,10 @@ export function UsersPage() {
   }
 
   async function handleDeleteConfirmed() {
-    if (!userToDelete) return;
+    if (!userToDelete) {
+      return;
+    }
+
     try {
       await deleteUser.mutateAsync(userToDelete.id);
       setUserToDelete(null);
@@ -63,6 +87,7 @@ export function UsersPage() {
         await refetch();
         return;
       }
+
       setDeletionMessage(
         getApiErrorMessage(error, 'Não foi possível excluir o usuário. Tente novamente.'),
       );
@@ -70,48 +95,97 @@ export function UsersPage() {
   }
 
   const successMessage = getSuccessMessage(location.state);
+  const isEmpty = data?.meta.total === 0;
+
   return (
-    <section>
-      <div className="users-page__header">
-        <PageTitle>Usuários</PageTitle>
-        <Link to="/users/new">Novo usuário</Link>
-      </div>
-      {successMessage ? <p role="status">{successMessage}</p> : null}
-      {deletionMessage ? <p role="alert">{deletionMessage}</p> : null}
-      <div className="users-page__search">
-        <label htmlFor="users-search">Pesquisar por nome</label>
-        <input
-          id="users-search"
-          type="search"
-          placeholder="Pesquisar por nome"
-          value={searchInput}
-          onChange={handleSearchChange}
-        />
-      </div>
-      {isPending ? <LoadingState message="Carregando usuários..." /> : null}
-      {isError ? (
-        <ErrorState
-          message="Não foi possível carregar os usuários."
-          onRetry={() => void refetch()}
-        />
-      ) : null}
-      {data && !isError && data.meta.total === 0 ? (
-        <EmptyState
-          message={
-            search ? 'Nenhum usuário encontrado para a pesquisa.' : 'Nenhum usuário cadastrado.'
-          }
-        />
-      ) : null}
-      {data && !isError && data.meta.total > 0 ? (
-        <>
-          <UsersTable users={data.data} onDeleteRequested={handleDeleteRequested} />
-          <Pagination
-            page={data.meta.page}
-            totalPages={data.meta.totalPages}
-            onPageChange={setPage}
+    <section className="space-y-6 [&>h1]:text-2xl [&>h1]:font-bold [&>h1]:text-heading">
+      <PageTitle>Usuários</PageTitle>
+
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-md">
+          <label htmlFor="users-search" className="sr-only">
+            Pesquisar por nome
+          </label>
+          <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted">
+            <span className="size-5">
+              <SearchIcon />
+            </span>
+          </span>
+          <input
+            id="users-search"
+            type="search"
+            placeholder="Pesquisar por nome"
+            value={searchInput}
+            onChange={handleSearchChange}
+            className="h-11 w-full rounded-md border border-sidebar/15 bg-surface py-2 pr-4 pl-11 text-sm text-content placeholder:text-muted"
           />
-        </>
+        </div>
+        <Link
+          to="/users/new"
+          className="inline-flex h-11 shrink-0 items-center justify-center rounded-md bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover"
+        >
+          + Cadastrar Usuário
+        </Link>
+      </div>
+
+      {successMessage ? (
+        <p role="status" className="text-sm text-secondary">
+          {successMessage}
+        </p>
       ) : null}
+      {deletionMessage ? (
+        <p role="alert" className="text-sm text-danger">
+          {deletionMessage}
+        </p>
+      ) : null}
+
+      <div className="surface-card overflow-hidden">
+        {isPending ? (
+          <div className="flex min-h-72 items-center justify-center">
+            <LoadingState message="Carregando usuários..." />
+          </div>
+        ) : null}
+        {isError ? (
+          <div className="flex min-h-72 items-center justify-center p-6">
+            <ErrorState
+              message="Não foi possível carregar os usuários."
+              onRetry={() => void refetch()}
+            />
+          </div>
+        ) : null}
+        {data && !isError && isEmpty ? (
+          <>
+            <EmptyState
+              title={search ? 'Nenhum Usuário Encontrado' : 'Nenhum Usuário Registrado'}
+              message={
+                search
+                  ? 'Não encontramos usuários para esta pesquisa.'
+                  : 'Utilize o botão Cadastrar Usuário para adicionar o primeiro usuário.'
+              }
+            />
+            <Pagination
+              page={data.meta.page}
+              total={data.meta.total}
+              limit={data.meta.limit}
+              totalPages={data.meta.totalPages}
+              onPageChange={setPage}
+            />
+          </>
+        ) : null}
+        {data && !isError && !isEmpty ? (
+          <>
+            <UsersTable users={data.data} onDeleteRequested={handleDeleteRequested} />
+            <Pagination
+              page={data.meta.page}
+              total={data.meta.total}
+              limit={data.meta.limit}
+              totalPages={data.meta.totalPages}
+              onPageChange={setPage}
+            />
+          </>
+        ) : null}
+      </div>
+
       <ConfirmDialog
         open={userToDelete !== null}
         title="Excluir usuário"
@@ -125,7 +199,9 @@ export function UsersPage() {
         confirmLabel="Excluir"
         isLoading={deleteUser.isPending}
         onCancel={() => {
-          if (!deleteUser.isPending) setUserToDelete(null);
+          if (!deleteUser.isPending) {
+            setUserToDelete(null);
+          }
         }}
         onConfirm={() => void handleDeleteConfirmed()}
       />

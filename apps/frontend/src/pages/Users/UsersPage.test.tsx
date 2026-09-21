@@ -23,12 +23,10 @@ const user = {
   updatedAt: '2026-09-19T00:00:00.000Z',
 };
 
-function createResponse(
-  overrides: Partial<PaginatedUsersResponse> = {},
-): PaginatedUsersResponse {
+function createResponse(overrides: Partial<PaginatedUsersResponse> = {}): PaginatedUsersResponse {
   return {
     data: [user],
-    meta: { page: 1, limit: 10, total: 1, totalPages: 1 },
+    meta: { page: 1, limit: 15, total: 1, totalPages: 1 },
     ...overrides,
   };
 }
@@ -65,7 +63,8 @@ describe('UsersPage', () => {
     renderUsersPage();
 
     expect(await screen.findByText('Maria Silva')).toBeInTheDocument();
-    expect(screen.getByText('maria@email.com')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Nome' })).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Ações' })).toBeInTheDocument();
   });
 
   it('displays a loading state', () => {
@@ -80,13 +79,13 @@ describe('UsersPage', () => {
     getUsersMock.mockResolvedValue(
       createResponse({
         data: [],
-        meta: { page: 1, limit: 10, total: 0, totalPages: 0 },
+        meta: { page: 1, limit: 15, total: 0, totalPages: 0 },
       }),
     );
 
     renderUsersPage();
 
-    expect(await screen.findByText('Nenhum usuário cadastrado.')).toBeInTheDocument();
+    expect(await screen.findByText('Nenhum Usuário Registrado')).toBeInTheDocument();
   });
 
   it('displays an error state when loading fails', async () => {
@@ -108,9 +107,12 @@ describe('UsersPage', () => {
       target: { value: 'maria' },
     });
 
-    await waitFor(() => {
-      expect(getUsersMock).toHaveBeenLastCalledWith({ page: 1, limit: 10, search: 'maria' });
-    }, { timeout: 600 });
+    await waitFor(
+      () => {
+        expect(getUsersMock).toHaveBeenLastCalledWith({ page: 1, limit: 15, search: 'maria' });
+      },
+      { timeout: 600 },
+    );
   });
 
   it('resets pagination to page one when the search changes', async () => {
@@ -118,7 +120,7 @@ describe('UsersPage', () => {
       createResponse({
         meta: {
           page: params?.page ?? 1,
-          limit: 10,
+          limit: 15,
           total: 20,
           totalPages: 2,
         },
@@ -127,18 +129,21 @@ describe('UsersPage', () => {
     renderUsersPage();
     await screen.findByText('Maria Silva');
 
-    fireEvent.click(screen.getByRole('button', { name: 'Próxima' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
     await waitFor(() => {
-      expect(getUsersMock).toHaveBeenLastCalledWith({ page: 2, limit: 10, search: undefined });
+      expect(getUsersMock).toHaveBeenLastCalledWith({ page: 2, limit: 15, search: undefined });
     });
 
     fireEvent.change(screen.getByPlaceholderText('Pesquisar por nome'), {
       target: { value: 'maria' },
     });
 
-    await waitFor(() => {
-      expect(getUsersMock).toHaveBeenLastCalledWith({ page: 1, limit: 10, search: 'maria' });
-    }, { timeout: 600 });
+    await waitFor(
+      () => {
+        expect(getUsersMock).toHaveBeenLastCalledWith({ page: 1, limit: 15, search: 'maria' });
+      },
+      { timeout: 600 },
+    );
   });
 
   it('requests the next page and disables previous navigation on the first page', async () => {
@@ -146,7 +151,7 @@ describe('UsersPage', () => {
       createResponse({
         meta: {
           page: params?.page ?? 1,
-          limit: 10,
+          limit: 15,
           total: 20,
           totalPages: 2,
         },
@@ -155,11 +160,11 @@ describe('UsersPage', () => {
     renderUsersPage();
     await screen.findByText('Maria Silva');
 
-    expect(screen.getByRole('button', { name: 'Anterior' })).toBeDisabled();
-    fireEvent.click(screen.getByRole('button', { name: 'Próxima' }));
+    expect(screen.getByRole('button', { name: 'Página anterior' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Próxima página' }));
 
     await waitFor(() => {
-      expect(getUsersMock).toHaveBeenLastCalledWith({ page: 2, limit: 10, search: undefined });
+      expect(getUsersMock).toHaveBeenLastCalledWith({ page: 2, limit: 15, search: undefined });
     });
   });
 
@@ -168,13 +173,13 @@ describe('UsersPage', () => {
     renderUsersPage();
     await screen.findByText('Maria Silva');
 
-    fireEvent.click(screen.getByRole('link', { name: 'Novo usuário' }));
+    fireEvent.click(screen.getByRole('link', { name: '+ Cadastrar Usuário' }));
     expect(await screen.findByRole('heading', { name: 'Novo usuário' })).toBeInTheDocument();
 
     cleanup();
     renderUsersPage();
     await screen.findByText('Maria Silva');
-    fireEvent.click(screen.getByRole('link', { name: 'Editar' }));
+    fireEvent.click(screen.getByRole('link', { name: 'Editar usuário' }));
 
     expect(await screen.findByRole('heading', { name: 'Editar usuário' })).toBeInTheDocument();
   });
