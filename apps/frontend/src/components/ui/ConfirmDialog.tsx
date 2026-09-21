@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { Button } from './Button';
 
 type ConfirmDialogProps = {
@@ -24,6 +24,13 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const cancelButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (open && !isLoading) {
+      cancelButtonRef.current?.focus();
+    }
+  }, [isLoading, open]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -41,10 +48,15 @@ export function ConfirmDialog({
   }
 
   return (
-    <section aria-describedby={descriptionId} aria-labelledby={titleId} aria-modal="true" role="dialog">
+    <section
+      aria-describedby={descriptionId}
+      aria-labelledby={titleId}
+      aria-modal="true"
+      role="dialog"
+    >
       <h2 id={titleId}>{title}</h2>
       <p id={descriptionId}>{description}</p>
-      <Button type="button" disabled={isLoading} onClick={onCancel}>
+      <Button ref={cancelButtonRef} type="button" disabled={isLoading} onClick={onCancel}>
         {cancelLabel}
       </Button>
       <Button type="button" disabled={isLoading} onClick={onConfirm}>

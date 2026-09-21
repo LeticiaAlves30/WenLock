@@ -63,31 +63,70 @@ export function UsersPage() {
         await refetch();
         return;
       }
-      setDeletionMessage(getApiErrorMessage(error, 'Não foi possível excluir o usuário. Tente novamente.'));
+      setDeletionMessage(
+        getApiErrorMessage(error, 'Não foi possível excluir o usuário. Tente novamente.'),
+      );
     }
   }
 
   const successMessage = getSuccessMessage(location.state);
   return (
     <section>
-      <div className="users-page__header"><PageTitle>Usuários</PageTitle><Link to="/users/new">Novo usuário</Link></div>
+      <div className="users-page__header">
+        <PageTitle>Usuários</PageTitle>
+        <Link to="/users/new">Novo usuário</Link>
+      </div>
       {successMessage ? <p role="status">{successMessage}</p> : null}
       {deletionMessage ? <p role="alert">{deletionMessage}</p> : null}
       <div className="users-page__search">
         <label htmlFor="users-search">Pesquisar por nome</label>
-        <input id="users-search" type="search" placeholder="Pesquisar por nome" value={searchInput} onChange={handleSearchChange} />
+        <input
+          id="users-search"
+          type="search"
+          placeholder="Pesquisar por nome"
+          value={searchInput}
+          onChange={handleSearchChange}
+        />
       </div>
       {isPending ? <LoadingState message="Carregando usuários..." /> : null}
-      {isError ? <ErrorState message="Não foi possível carregar os usuários." onRetry={() => void refetch()} /> : null}
-      {data && !isError && data.meta.total === 0 ? <EmptyState message={search ? 'Nenhum usuário encontrado para a pesquisa.' : 'Nenhum usuário cadastrado.'} /> : null}
-      {data && !isError && data.meta.total > 0 ? <><UsersTable users={data.data} onDeleteRequested={handleDeleteRequested} /><Pagination page={data.meta.page} totalPages={data.meta.totalPages} onPageChange={setPage} /></> : null}
+      {isError ? (
+        <ErrorState
+          message="Não foi possível carregar os usuários."
+          onRetry={() => void refetch()}
+        />
+      ) : null}
+      {data && !isError && data.meta.total === 0 ? (
+        <EmptyState
+          message={
+            search ? 'Nenhum usuário encontrado para a pesquisa.' : 'Nenhum usuário cadastrado.'
+          }
+        />
+      ) : null}
+      {data && !isError && data.meta.total > 0 ? (
+        <>
+          <UsersTable users={data.data} onDeleteRequested={handleDeleteRequested} />
+          <Pagination
+            page={data.meta.page}
+            totalPages={data.meta.totalPages}
+            onPageChange={setPage}
+          />
+        </>
+      ) : null}
       <ConfirmDialog
         open={userToDelete !== null}
         title="Excluir usuário"
-        description={userToDelete ? 'Tem certeza que deseja excluir ' + userToDelete.name + '? Esta ação não poderá ser desfeita.' : ''}
+        description={
+          userToDelete
+            ? 'Tem certeza que deseja excluir ' +
+              userToDelete.name +
+              '? Esta ação não poderá ser desfeita.'
+            : ''
+        }
         confirmLabel="Excluir"
         isLoading={deleteUser.isPending}
-        onCancel={() => { if (!deleteUser.isPending) setUserToDelete(null); }}
+        onCancel={() => {
+          if (!deleteUser.isPending) setUserToDelete(null);
+        }}
         onConfirm={() => void handleDeleteConfirmed()}
       />
     </section>

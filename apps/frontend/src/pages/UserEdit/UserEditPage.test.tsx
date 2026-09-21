@@ -169,7 +169,7 @@ describe('UserEditPage', () => {
     await submitForm();
 
     await waitFor(() => {
-      expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['users'] });
+      expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['users', 'list'] });
       expect(invalidateQueries).toHaveBeenCalledWith({
         queryKey: ['users', 'detail', user.id],
       });

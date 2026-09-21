@@ -1,7 +1,15 @@
+import { forwardRef } from 'react';
 import type { ComponentPropsWithoutRef } from 'react';
 
 type ButtonProps = ComponentPropsWithoutRef<'button'>;
 
-export function Button({ children, ...props }: ButtonProps) {
-  return <button {...props}>{children}</button>;
-}
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { children, ...props },
+  ref,
+) {
+  return (
+    <button ref={ref} {...props}>
+      {children}
+    </button>
+  );
+});

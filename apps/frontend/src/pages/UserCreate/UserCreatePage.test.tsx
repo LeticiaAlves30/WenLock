@@ -153,7 +153,7 @@ describe('UserCreatePage', () => {
     await submitValidForm();
 
     await waitFor(() => {
-      expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['users'] });
+      expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['users', 'list'] });
     });
   });
 

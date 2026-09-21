@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { usersService } from '../services/users.service';
-import { userDetailQueryKey } from './useUsers';
+import { usersKeys } from './useUsers';
 
 export function useUser(id: string | undefined) {
   return useQuery({
-    queryKey: userDetailQueryKey(id ?? ''),
+    queryKey: usersKeys.detail(id ?? ''),
     queryFn: async () => {
       if (!id) {
         throw new Error('User id is required.');
