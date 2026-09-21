@@ -77,6 +77,7 @@ describe('user deletion', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Excluir' }));
     await waitFor(() => expect(deleteUserMock).toHaveBeenCalledWith(user.id));
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ['users', 'list'] });
+    expect(await screen.findByRole('status')).toHaveTextContent('Usuário excluído com sucesso.');
   });
 
   it('disables actions while deletion is pending', async () => {

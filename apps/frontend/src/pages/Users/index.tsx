@@ -4,7 +4,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { EmptyState } from '../../components/feedback/EmptyState';
 import { ErrorState } from '../../components/feedback/ErrorState';
 import { LoadingState } from '../../components/feedback/LoadingState';
+import { Toast } from '../../components/feedback/Toast';
 import { UsersTable } from '../../components/users/UsersTable';
+import { UserDetailsDrawer } from '../../components/users/UserDetailsDrawer';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { Pagination } from '../../components/ui/Pagination';
 import { PageTitle } from '../../components/ui/PageTitle';
@@ -40,7 +42,9 @@ export function UsersPage() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
-  const [deletionMessage, setDeletionMessage] = useState<string>();
+  const [userToView, setUserToView] = useState<User | null>(null);
+  const [deletionError, setDeletionError] = useState<string>();
+  const [notificationMessage, setNotificationMessage] = useState<string>();
   const search = useDebounce(searchInput, SEARCH_DEBOUNCE_DELAY).trim();
   const { data, isError, isPending, refetch } = useUsers({
     page,
@@ -61,13 +65,21 @@ export function UsersPage() {
     }
   }, [data, page]);
 
+  const successMessage = getSuccessMessage(location.state);
+
+  useEffect(() => {
+    if (successMessage) {
+      setNotificationMessage(successMessage);
+    }
+  }, [successMessage]);
+
   function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
     setPage(1);
     setSearchInput(event.target.value);
   }
 
   function handleDeleteRequested(user: User) {
-    setDeletionMessage(undefined);
+    setDeletionError(undefined);
     setUserToDelete(user);
   }
 
@@ -79,22 +91,21 @@ export function UsersPage() {
     try {
       await deleteUser.mutateAsync(userToDelete.id);
       setUserToDelete(null);
-      setDeletionMessage('Usuário excluído com sucesso.');
+      setNotificationMessage('Usuário excluído com sucesso.');
     } catch (error: unknown) {
       if (hasApiErrorStatus(error, 404)) {
         setUserToDelete(null);
-        setDeletionMessage('Usuário não encontrado.');
+        setDeletionError('Usuário não encontrado.');
         await refetch();
         return;
       }
 
-      setDeletionMessage(
+      setDeletionError(
         getApiErrorMessage(error, 'Não foi possível excluir o usuário. Tente novamente.'),
       );
     }
   }
 
-  const successMessage = getSuccessMessage(location.state);
   const isEmpty = data?.meta.total === 0;
 
   return (
@@ -128,15 +139,13 @@ export function UsersPage() {
         </Link>
       </div>
 
-      {successMessage ? (
-        <p role="status" className="text-sm text-secondary">
-          {successMessage}
+      {deletionError ? (
+        <p role="alert" className="text-sm text-danger">
+          {deletionError}
         </p>
       ) : null}
-      {deletionMessage ? (
-        <p role="alert" className="text-sm text-danger">
-          {deletionMessage}
-        </p>
+      {notificationMessage ? (
+        <Toast message={notificationMessage} onDismiss={() => setNotificationMessage(undefined)} />
       ) : null}
 
       <div className="surface-card overflow-hidden">
@@ -174,7 +183,11 @@ export function UsersPage() {
         ) : null}
         {data && !isError && !isEmpty ? (
           <>
-            <UsersTable users={data.data} onDeleteRequested={handleDeleteRequested} />
+            <UsersTable
+              users={data.data}
+              onDeleteRequested={handleDeleteRequested}
+              onViewRequested={setUserToView}
+            />
             <Pagination
               page={data.meta.page}
               total={data.meta.total}
@@ -198,6 +211,7 @@ export function UsersPage() {
         }
         confirmLabel="Excluir"
         isLoading={deleteUser.isPending}
+        loadingLabel="Excluindo..."
         onCancel={() => {
           if (!deleteUser.isPending) {
             setUserToDelete(null);
@@ -205,6 +219,7 @@ export function UsersPage() {
         }}
         onConfirm={() => void handleDeleteConfirmed()}
       />
+      <UserDetailsDrawer user={userToView} onClose={() => setUserToView(null)} />
     </section>
   );
 }

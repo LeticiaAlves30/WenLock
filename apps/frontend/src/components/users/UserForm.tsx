@@ -64,51 +64,37 @@ export function UserForm({
   const passwordRequired = mode === 'create';
 
   return (
-    <form noValidate onSubmit={handleSubmit(handleValidSubmit)}>
-      <Input
-        label="Nome"
-        autoComplete="name"
-        error={errors.name?.message}
-        placeholder="Nome completo"
-        required
-        {...register('name')}
-      />
-      <Input
-        label="E-mail"
-        autoComplete="email"
-        error={errors.email?.message}
-        placeholder="nome@email.com"
-        required
-        type="email"
-        {...register('email')}
-      />
-      <Input
-        label="Matrícula"
-        autoComplete="off"
-        error={errors.registration?.message}
-        inputMode="numeric"
-        placeholder="001234"
-        required
-        type="text"
-        {...register('registration')}
-      />
-      <Input
-        label="Senha"
-        autoComplete={mode === 'create' ? 'new-password' : 'off'}
-        error={errors.password?.message}
-        placeholder={mode === 'edit' ? 'Deixe em branco para manter a senha atual' : 'abc123'}
-        required={passwordRequired}
-        type="password"
-        {...register('password')}
-      />
-      <Button type="submit" disabled={saveDisabled}>
-        {isFormSubmitting || isSubmitting ? 'Salvando...' : 'Salvar'}
-      </Button>
-      {onCancel ? (
-        <Button type="button" onClick={onCancel}>
-          Cancelar
+    <form
+      noValidate
+      onSubmit={handleSubmit(handleValidSubmit)}
+      className="surface-card space-y-7 p-4 sm:p-6"
+    >
+      <fieldset>
+        <legend className="flex w-full items-center gap-3 text-sm font-bold text-content after:h-px after:flex-1 after:bg-sidebar/35">
+          Dados do Usuário
+        </legend>
+        <div className="mt-5 grid gap-x-5 gap-y-5 md:grid-cols-2">
+          <Input aria-label="Nome" label="Nome Completo" autoComplete="name" error={errors.name?.message} hint="Máx. 30 caracteres" placeholder="Nome completo" required {...register('name')} />
+          <Input aria-label="Matrícula" label="Matrícula" autoComplete="off" error={errors.registration?.message} hint="Somente números" inputMode="numeric" placeholder="001234" required type="text" {...register('registration')} />
+          <Input aria-label="E-mail" label="E-mail" autoComplete="email" error={errors.email?.message} hint="Máx. 40 caracteres" placeholder="nome@email.com" required type="email" {...register('email')} />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="flex w-full items-center gap-3 text-sm font-bold text-content after:h-px after:flex-1 after:bg-sidebar/35">
+          Dados de acesso
+        </legend>
+        <div className="mt-5 grid gap-x-5 gap-y-5 md:grid-cols-2">
+          <Input aria-label="Senha" label="Senha" autoComplete={mode === 'create' ? 'new-password' : 'off'} error={errors.password?.message} hint={mode === 'create' ? '6 caracteres alfanuméricos' : undefined} placeholder={mode === 'edit' ? 'Deixe em branco para manter a senha atual' : 'abc123'} required={passwordRequired} type="password" {...register('password')} />
+        </div>
+      </fieldset>
+
+      <div className="flex flex-col-reverse gap-3 pt-3 sm:flex-row sm:justify-end">
+        {onCancel ? <Button type="button" onClick={onCancel} className="h-11 rounded-md border border-sidebar bg-surface px-8 text-sm font-bold text-content transition-colors hover:bg-app-background">Cancelar</Button> : null}
+        <Button type="submit" disabled={saveDisabled} className="h-11 rounded-md bg-primary px-9 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60">
+          {isFormSubmitting || isSubmitting ? 'Salvando...' : mode === 'create' ? 'Cadastrar' : 'Salvar'}
         </Button>
-      ) : null}
+      </div>
     </form>
   );
 }

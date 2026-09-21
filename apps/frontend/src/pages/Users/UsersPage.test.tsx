@@ -67,6 +67,21 @@ describe('UsersPage', () => {
     expect(screen.getByRole('columnheader', { name: 'Ações' })).toBeInTheDocument();
   });
 
+  it('opens the user details drawer from the view action', async () => {
+    getUsersMock.mockResolvedValue(createResponse());
+    renderUsersPage();
+
+    await screen.findByText('Maria Silva');
+    fireEvent.click(screen.getByRole('button', { name: 'Visualizar usuário' }));
+
+    const drawer = screen.getByRole('dialog', { name: 'Visualizar Usuário' });
+    expect(drawer).toHaveTextContent('maria@email.com');
+    expect(drawer).toHaveTextContent('001234');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
+    expect(screen.queryByRole('dialog', { name: 'Visualizar Usuário' })).not.toBeInTheDocument();
+  });
+
   it('displays a loading state', () => {
     getUsersMock.mockReturnValue(new Promise(() => {}));
 

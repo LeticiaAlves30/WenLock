@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 
 type UsersTableProps = {
   users: User[];
+  onViewRequested: (user: User) => void;
   onDeleteRequested: (user: User) => void;
 };
 
@@ -36,7 +37,7 @@ function DeleteIcon() {
 const actionClassName =
   'inline-flex size-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-primary/10 hover:text-primary';
 
-export function UsersTable({ users, onDeleteRequested }: UsersTableProps) {
+export function UsersTable({ users, onDeleteRequested, onViewRequested }: UsersTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full border-separate border-spacing-0 text-left">
@@ -58,10 +59,10 @@ export function UsersTable({ users, onDeleteRequested }: UsersTableProps) {
                 <div className="flex items-center justify-end gap-1">
                   <Button
                     type="button"
-                    disabled
-                    title="Visualização indisponível"
+                    title="Visualizar usuário"
                     aria-label="Visualizar usuário"
-                    className={actionClassName + ' cursor-not-allowed opacity-45'}
+                    className={actionClassName}
+                    onClick={() => onViewRequested(user)}
                   >
                     <ViewIcon />
                   </Button>

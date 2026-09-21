@@ -17,7 +17,7 @@ describe('UserForm', () => {
   it('starts with the save button disabled', () => {
     render(<UserForm mode="create" onSubmit={vi.fn()} />);
 
-    expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeDisabled();
   });
 
   it('displays an error for an invalid name', async () => {
@@ -65,7 +65,7 @@ describe('UserForm', () => {
     fireEvent.change(screen.getByLabelText('Matrícula'), { target: { value: '001234' } });
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled();
+      expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeDisabled();
     });
   });
 
@@ -75,9 +75,9 @@ describe('UserForm', () => {
     fillValidCreateForm();
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Salvar' })).toBeEnabled();
+      expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeEnabled();
     });
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar' }));
 
     await waitFor(() => {
       expect(onSubmit).toHaveBeenCalledWith({

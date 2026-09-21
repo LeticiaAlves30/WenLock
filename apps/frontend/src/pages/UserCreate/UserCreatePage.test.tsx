@@ -69,9 +69,9 @@ function fillValidForm() {
 async function submitValidForm() {
   fillValidForm();
   await waitFor(() => {
-    expect(screen.getByRole('button', { name: 'Salvar' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeEnabled();
   });
-  fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Cadastrar' }));
 }
 
 function createApiError(status: number, message: string) {
@@ -90,7 +90,7 @@ describe('UserCreatePage', () => {
   it('renders the user creation form', () => {
     renderUserCreatePage();
 
-    expect(screen.getByRole('heading', { name: 'Cadastrar usuário' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cadastro de Usuário' })).toBeInTheDocument();
     expect(screen.getByLabelText('Nome')).toBeInTheDocument();
     expect(screen.getByLabelText('E-mail')).toBeInTheDocument();
     expect(screen.getByLabelText('Matrícula')).toBeInTheDocument();
@@ -100,8 +100,8 @@ describe('UserCreatePage', () => {
   it('only calls the mutation after the form is valid', async () => {
     renderUserCreatePage();
 
-    expect(screen.getByRole('button', { name: 'Salvar' })).toBeDisabled();
-    fireEvent.click(screen.getByRole('button', { name: 'Salvar' }));
+    expect(screen.getByRole('button', { name: 'Cadastrar' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Cadastrar' }));
     expect(createUserMock).not.toHaveBeenCalled();
 
     createUserMock.mockResolvedValue(createdUser);
@@ -190,6 +190,8 @@ describe('UserCreatePage', () => {
     renderUserCreatePage();
 
     fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }));
+    expect(screen.getByRole('dialog')).toHaveTextContent('Deseja cancelar?');
+    fireEvent.click(screen.getByRole('button', { name: 'Sim' }));
 
     expect(await screen.findByRole('heading', { name: 'Usuários' })).toBeInTheDocument();
   });
