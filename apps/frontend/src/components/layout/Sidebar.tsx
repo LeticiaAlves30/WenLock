@@ -2,12 +2,14 @@ import {
   CaretDown,
   CaretLeft,
   CaretRight,
-  House,
+  ChartPieSlice,
   IdentificationCard,
   User,
 } from '@phosphor-icons/react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import wenlockLogo from '../../assets/wenlock-logo.svg';
+import wenlockSymbol from '../../assets/wenlock-symbol.svg';
 
 type SidebarProps = {
   collapsed: boolean;
@@ -15,6 +17,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+  const [isAccessControlExpanded, setIsAccessControlExpanded] = useState(true);
   const homeNavigationClass = ({ isActive }: { isActive: boolean }) =>
     [
       'flex min-h-11 items-center gap-3 rounded px-3 text-sm font-semibold transition-colors',
@@ -38,7 +41,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     >
       <div className="flex h-24 items-center px-7">
         {collapsed ? (
-          <span className="text-2xl font-extrabold text-primary">W</span>
+          <img src={wenlockSymbol} alt="WenLock" className="h-auto w-11" />
         ) : (
           <img src={wenlockLogo} alt="WenLock" className="h-auto w-full max-w-48" />
         )}
@@ -46,14 +49,19 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       <nav aria-label="Navegação principal" className="flex-1 px-4">
         <NavLink end to="/" className={homeNavigationClass} aria-label="Home">
-          <House aria-hidden="true" size={18} weight="duotone" />
+          <ChartPieSlice aria-hidden="true" size={18} weight="duotone" />
           {!collapsed ? <span>Home</span> : null}
         </NavLink>
 
         <div className="mt-5">
-          <div
+          <button
+            type="button"
+            aria-controls="access-control-navigation"
+            aria-expanded={isAccessControlExpanded}
+            aria-label={isAccessControlExpanded ? 'Recolher Controle de Acesso' : 'Expandir Controle de Acesso'}
+            onClick={() => setIsAccessControlExpanded((isExpanded) => !isExpanded)}
             className={[
-              'flex min-h-11 items-center gap-3 px-3 text-sm font-semibold text-white/65',
+              'flex min-h-11 w-full items-center gap-3 px-3 text-left text-sm font-semibold text-white/65 transition-colors hover:text-white',
               collapsed ? 'justify-center px-2' : '',
             ].join(' ')}
           >
@@ -61,20 +69,28 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             {!collapsed ? (
               <>
                 <span className="flex-1">Controle de Acesso</span>
-                <CaretDown aria-hidden="true" size={15} weight="bold" />
+                <CaretDown
+                  aria-hidden="true"
+                  size={15}
+                  weight="bold"
+                  className={`transition-transform ${isAccessControlExpanded ? '' : '-rotate-90'}`}
+                />
               </>
             ) : null}
-          </div>
-          <NavLink
-            to="/users"
-            className={({ isActive }) =>
-              `${collapsed ? 'mt-2' : 'mt-2 ml-6'} ${usersNavigationClass({ isActive })}`
-            }
-            aria-label="Usuários"
-          >
-            <User aria-hidden="true" size={18} weight="fill" />
-            {!collapsed ? <span>Usuários</span> : null}
-          </NavLink>
+          </button>
+          {isAccessControlExpanded ? (
+            <NavLink
+              id="access-control-navigation"
+              to="/users"
+              className={({ isActive }) =>
+                `${collapsed ? 'mt-2' : 'mt-2 ml-6'} ${usersNavigationClass({ isActive })}`
+              }
+              aria-label="Usuários"
+            >
+              <User aria-hidden="true" size={18} weight="fill" />
+              {!collapsed ? <span>Usuários</span> : null}
+            </NavLink>
+          ) : null}
         </div>
       </nav>
 
