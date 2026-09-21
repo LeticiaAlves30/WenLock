@@ -2,8 +2,10 @@ import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import wenlockLogo from '../../assets/wenlock-logo.svg';
+import { startDemoSession } from '../../auth/session';
 import { Button } from '../../components/ui/Button';
 
 const loginSchema = z.object({
@@ -15,7 +17,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [submissionMessage, setSubmissionMessage] = useState<string>();
+  const navigate = useNavigate();
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -27,7 +29,8 @@ export function LoginPage() {
   });
 
   function handleValidSubmit(): void {
-    setSubmissionMessage('A autenticação ainda não está disponível nesta demonstração.');
+    startDemoSession();
+    navigate('/', { replace: true });
   }
 
   return (
@@ -110,12 +113,6 @@ export function LoginPage() {
               Entrar
             </Button>
           </form>
-
-          {submissionMessage ? (
-            <p role="status" className="mt-4 text-center text-sm text-muted">
-              {submissionMessage}
-            </p>
-          ) : null}
 
           <p className="mt-7 text-center text-sm font-semibold text-primary">Esqueci minha senha</p>
         </div>

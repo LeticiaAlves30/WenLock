@@ -5,16 +5,26 @@ import { LoginPage } from '../pages/Login';
 import { UserCreatePage } from '../pages/UserCreate';
 import { UserEditPage } from '../pages/UserEdit';
 import { UsersPage } from '../pages/Users';
+import { ProtectedRoute } from './ProtectedRoute';
+import { PublicOnlyRoute } from './PublicOnlyRoute';
 
 export const routeDefinitions: RouteObject[] = [
-  { path: 'login', element: <LoginPage /> },
   {
-    element: <AppLayout />,
+    element: <PublicOnlyRoute />,
+    children: [{ path: 'login', element: <LoginPage /> }],
+  },
+  {
+    element: <ProtectedRoute />,
     children: [
-      { index: true, element: <HomePage /> },
-      { path: 'users', element: <UsersPage /> },
-      { path: 'users/new', element: <UserCreatePage /> },
-      { path: 'users/:id/edit', element: <UserEditPage /> },
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <HomePage /> },
+          { path: 'users', element: <UsersPage /> },
+          { path: 'users/new', element: <UserCreatePage /> },
+          { path: 'users/:id/edit', element: <UserEditPage /> },
+        ],
+      },
     ],
   },
 ];
