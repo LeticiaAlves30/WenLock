@@ -1,70 +1,104 @@
+import {
+  CaretDown,
+  CaretLeft,
+  CaretRight,
+  House,
+  IdentificationCard,
+  User,
+} from '@phosphor-icons/react';
 import { NavLink } from 'react-router-dom';
+import wenlockLogo from '../../assets/wenlock-logo.svg';
 
 type SidebarProps = {
   collapsed: boolean;
   onToggle: () => void;
 };
 
-function HomeIcon() {
-  return <span aria-hidden="true">⌂</span>;
-}
-
-function UsersIcon() {
-  return <span aria-hidden="true">◉</span>;
-}
-
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
-  const navigationItemClass = ({ isActive }: { isActive: boolean }) =>
+  const homeNavigationClass = ({ isActive }: { isActive: boolean }) =>
     [
-      'flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold transition-colors',
-      isActive ? 'bg-primary text-white' : 'text-white/80 hover:bg-white/10 hover:text-white',
+      'flex min-h-11 items-center gap-3 rounded px-3 text-sm font-semibold transition-colors',
+      isActive ? 'bg-white/10 text-white' : 'text-white/75 hover:bg-white/10 hover:text-white',
+      collapsed ? 'justify-center px-2' : '',
+    ].join(' ');
+
+  const usersNavigationClass = ({ isActive }: { isActive: boolean }) =>
+    [
+      'flex min-h-11 items-center gap-3 rounded px-3 text-sm font-bold transition-colors',
+      isActive ? 'bg-primary text-sidebar' : 'text-white/75 hover:bg-white/10 hover:text-white',
       collapsed ? 'justify-center px-2' : '',
     ].join(' ');
 
   return (
     <aside
       className={[
-        'relative flex min-h-screen shrink-0 flex-col bg-sidebar text-white transition-[width] duration-200',
+        'relative flex min-h-screen shrink-0 flex-col bg-sidebar text-white shadow-[3px_0_10px_rgb(13_25_49/18%)] transition-[width] duration-200',
         collapsed ? 'w-20' : 'w-64',
       ].join(' ')}
     >
-      <div className="flex h-20 items-center px-6">
-        <span className="text-xl font-extrabold tracking-tight">{collapsed ? 'W' : 'WenLock'}</span>
+      <div className="flex h-24 items-center px-7">
+        {collapsed ? (
+          <span className="text-2xl font-extrabold text-primary">W</span>
+        ) : (
+          <img src={wenlockLogo} alt="WenLock" className="h-auto w-full max-w-48" />
+        )}
       </div>
 
-      <nav aria-label="Navegação principal" className="flex-1 px-3">
-        <NavLink end to="/" className={navigationItemClass} aria-label="Home">
-          <HomeIcon />
+      <nav aria-label="Navegação principal" className="flex-1 px-4">
+        <NavLink end to="/" className={homeNavigationClass} aria-label="Home">
+          <House aria-hidden="true" size={18} weight="duotone" />
           {!collapsed ? <span>Home</span> : null}
         </NavLink>
-        {!collapsed ? (
-          <p className="mt-8 px-3 text-xs font-bold uppercase tracking-wider text-white/45">
-            Controle de Acesso
-          </p>
-        ) : null}
-        <NavLink to="/users" className={'mt-2 ' + navigationItemClass} aria-label="Usuários">
-          <UsersIcon />
-          {!collapsed ? <span>Usuários</span> : null}
-        </NavLink>
+
+        <div className="mt-5">
+          <div
+            className={[
+              'flex min-h-11 items-center gap-3 px-3 text-sm font-semibold text-white/65',
+              collapsed ? 'justify-center px-2' : '',
+            ].join(' ')}
+          >
+            <IdentificationCard aria-hidden="true" size={18} weight="fill" />
+            {!collapsed ? (
+              <>
+                <span className="flex-1">Controle de Acesso</span>
+                <CaretDown aria-hidden="true" size={15} weight="bold" />
+              </>
+            ) : null}
+          </div>
+          <NavLink
+            to="/users"
+            className={({ isActive }) =>
+              `${collapsed ? 'mt-2' : 'mt-2 ml-6'} ${usersNavigationClass({ isActive })}`
+            }
+            aria-label="Usuários"
+          >
+            <User aria-hidden="true" size={18} weight="fill" />
+            {!collapsed ? <span>Usuários</span> : null}
+          </NavLink>
+        </div>
       </nav>
 
       <button
         type="button"
         aria-label={collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral'}
-        className="absolute -right-3 top-24 flex size-6 items-center justify-center rounded-full border border-sidebar/20 bg-surface text-sidebar shadow-sm hover:bg-app-background"
+        className="absolute -right-3 top-10 flex size-7 items-center justify-center rounded-full border border-sidebar/20 bg-surface text-sidebar shadow-sm hover:bg-app-background"
         onClick={onToggle}
       >
-        <span aria-hidden="true">{collapsed ? '›' : '‹'}</span>
+        {collapsed ? (
+          <CaretRight aria-hidden="true" size={15} weight="bold" />
+        ) : (
+          <CaretLeft aria-hidden="true" size={15} weight="bold" />
+        )}
       </button>
 
-      <footer className="border-t border-white/10 px-6 py-5 text-xs leading-6 text-white/55">
+      <footer className="px-7 py-5 text-[10px] leading-[1.35] text-white/55">
         {collapsed ? (
           <span aria-label="WenLock">© W</span>
         ) : (
           <>
-            <p>© WenLock</p>
+            <p className="text-sm font-bold text-white">© WenLock</p>
             <p>Power by Conecthus</p>
-            <p>Version 0.1.0</p>
+            <p>V 0.0.0</p>
           </>
         )}
       </footer>

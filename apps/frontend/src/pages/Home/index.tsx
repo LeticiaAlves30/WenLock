@@ -1,4 +1,5 @@
 import { PageTitle } from '../../components/ui/PageTitle';
+import homeIllustration from '../../assets/home-illustration.svg';
 
 const formattedDate = new Intl.DateTimeFormat('pt-BR', {
   day: '2-digit',
@@ -18,7 +19,11 @@ export function HomePage() {
         </header>
 
         <div className="flex flex-1 flex-col items-center justify-center pb-16 text-center">
-          <div className="h-48 w-full" aria-hidden="true" />
+          <img
+            src={homeIllustration}
+            alt="Ilustração de boas-vindas do WenLock"
+            className="h-auto w-full max-w-md"
+          />
           <div className="mt-8 rounded-md bg-primary/10 px-6 py-4">
             <p className="text-lg font-bold text-heading">Bem-vindo ao WenLock!</p>
           </div>

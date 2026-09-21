@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import wenlockLogo from '../../assets/wenlock-logo.svg';
 import { Button } from '../../components/ui/Button';
 
 const loginSchema = z.object({
@@ -30,17 +31,13 @@ export function LoginPage() {
   }
 
   return (
-    <main className="grid min-h-screen bg-sidebar lg:grid-cols-[0.9fr_1.1fr]">
+    <main className="grid min-h-screen bg-sidebar lg:grid-cols-[1.05fr_0.95fr]">
       <section className="flex min-h-52 items-center justify-center px-8 py-12 lg:min-h-screen">
-        <p className="text-5xl font-extrabold tracking-tight sm:text-6xl">
-          <span className="text-primary">Wen</span>
-          <span className="text-white">Lock</span>
-          <span className="text-primary">.</span>
-        </p>
+        <img src={wenlockLogo} alt="WenLock" className="h-auto w-full max-w-md" />
       </section>
 
       <section className="flex items-center justify-center px-5 pb-10 lg:p-10">
-        <div className="w-full max-w-xl rounded-lg bg-surface p-8 shadow-2xl sm:p-12 lg:p-14">
+        <div className="min-h-[36rem] w-full max-w-[34rem] rounded-lg bg-surface p-8 shadow-2xl sm:p-12 lg:p-10 xl:p-14">
           <header>
             <h1 className="text-3xl font-extrabold text-primary sm:text-4xl">Bem-vindo!</h1>
             <p className="mt-3 text-base font-semibold text-content">Entre com sua conta</p>
